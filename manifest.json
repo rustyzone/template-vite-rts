@@ -1,0 +1,29 @@
+{
+  "background": { "service_worker": "src/background.ts" },
+  "permissions": ["storage", "tabs"],
+  "optional_host_permissions": ["http://localhost:3000/*"],
+  "content_scripts": [
+    {
+      "js": ["src/content.ts"],
+      "matches": ["http://localhost:3000/*"]
+    }
+  ],
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "src/pages/popup/index.html",
+    "default_title": "Popup",
+    "default_icon": "src/assets/icon.png"
+  },
+  "icons": {
+    "16": "src/assets/icon.png",
+    "32": "src/assets/icon.png",
+    "48": "src/assets/icon.png",
+    "128": "src/assets/icon.png"
+  },
+  "web_accessible_resources": [
+    {
+      "matches": ["<all_urls>"],
+      "resources": ["src/pages/onboarding/index.html"]
+    }
+  ]
+}
