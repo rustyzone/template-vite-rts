@@ -3,9 +3,15 @@ import localforage from "localforage";
 
 // only emit console.log if in dev mode
 const dev = process.env.NODE_ENV === "development";
+console.log('mode', {node_env:process.env.NODE_ENV, dev})
 const clog = (...args: any[]) => {
+  // Only log in development mode
   if (dev) {
-    console.debug(...args);
+    console.debug(
+      `%c${args[0]}`,
+      "color: blue; font-weight: bold;",
+     { message: args[1]}
+    );
   }
 };
 
@@ -98,6 +104,8 @@ try {
   const user = User.getInstance();
   clog("user", user);
 
+
+  // Open onboarding tab on install
   chrome.runtime.onInstalled.addListener(async (details) => {
     // check if reason is install
     clog("reason", details);
@@ -120,34 +128,6 @@ try {
   ): Promise<any> => {
     // switch case
     switch (message.type) {
-      case "insert-data":
-        // await supabase user
-        const session = await supabase.auth.getSession();
-        const userSess = session.data.session?.user;
-        const userId = userSess?.id;
-        clog("about to upload", userId, message?.payload, supabase);
-
-        const type = message?.form_type || "unknown";
-
-        const { data, error } = await supabase
-          .from("form-data")
-          .upsert(
-            [
-              {
-                user_id: userId,
-                data: message?.payload || {},
-                updated_at: new Date(),
-                form_type: type,
-              },
-            ],
-            {
-              onConflict: "user_id,form_type",
-            }
-          )
-          .select("*");
-
-        clog("data", data, error);
-        break;
       //TODO - log in user from onboarding page or popup - also have a new tab page with login template
       case "app-auth":
         // send message to background

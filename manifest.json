@@ -1,11 +1,15 @@
 {
-  "background": { "service_worker": "src/background.ts" },
+  "background": { "service_worker": "src/sw.ts" },
   "permissions": ["storage", "tabs"],
-  "optional_host_permissions": ["http://localhost:3000/*"],
+  "optional_host_permissions": ["http://localhost:3000/*", "https://www.google.com/*"],
   "content_scripts": [
     {
       "js": ["src/content.ts"],
       "matches": ["http://localhost:3000/*"]
+    },
+    {
+      "js": ["src/shadow.tsx"],
+      "matches": ["https://www.google.com/*"]
     }
   ],
   "manifest_version": 3,
@@ -23,7 +27,10 @@
   "web_accessible_resources": [
     {
       "matches": ["<all_urls>"],
-      "resources": ["src/pages/onboarding/index.html"]
+      "resources": [
+        "src/pages/onboarding/index.html",
+        "src/css/styling.css"
+      ]
     }
   ]
 }

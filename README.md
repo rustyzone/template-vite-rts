@@ -5,8 +5,8 @@ plugin
 
 ## Commands
 
-~~`yarn dev:old` run local development with reloader and listen for changes to
-tailwind & extension files.~~ - To fix for vite support issue with tailwind loading, service worker takes a moment to kick in.
+~~`yarn dev` run local development with reloader and listen for changes to
+tailwind & extension files. - Sometimes when opening the onboarding page it requires a manual reload due to loading delay but a refresh should resolve this issue.
 
 `yarn build` make a dev build build
 

@@ -45,10 +45,8 @@ export default defineConfig({
           to: JSON.stringify(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
         },
         {
-          from: "process.env.NODE_ENV",
-          to: isProduction
-            ? JSON.stringify("production")
-            : JSON.stringify("development"),
+          from: "process.env.NODE_ENV_PROD",
+          to: JSON.stringify(process.env.NODE_ENV_PROD),
         },
       ],
     }),

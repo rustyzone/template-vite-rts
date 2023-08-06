@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Browser from "webextension-polyfill";
+import './css/styling.css';
 
 // check env var and either vuse the dev or prod url
-const appUrl =
-  process.env.NODE_ENV === "development"
-    ? "http://localhost:3000"
-    : "https://mysite.com";
+// const appUrl =
+//   process.env.NODE_ENV === "development"
+//     ? "http://localhost:3000"
+//     : "https://mysite.com";
+
 
 const App = (): JSX.Element => {
   const [granted, setGranted] = useState(false);
@@ -27,7 +29,7 @@ const App = (): JSX.Element => {
         {!granted && (
           <>
             <p className="py-4 text-gray-300 text-lg">
-              Please click below to enable host permission to begin, without
+             Please click below to enable host permission to begin, without
               this the extension cannot run.
             </p>
             <button
@@ -54,11 +56,16 @@ const App = (): JSX.Element => {
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
               onClick={() => {
                 // change url of the current tab to the app url
-                chrome.tabs.update({ url: `${appUrl}/extension-install` });
+
+                // Change current tab or show message
+                // chrome.tabs.update({ url: `${appUrl}/extension-install` });
+
+                alert('Permissions Granted')
               }}
             >
               Continue
             </button>
+
           </div>
         )}
       </div>

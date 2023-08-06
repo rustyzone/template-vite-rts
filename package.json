@@ -1,6 +1,6 @@
 {
   "name": "vite-rts-template",
-  "version": "1.2.5",
+  "version": "0.0.1",
   "private": true,
   "description": "Template with Vite, React, Tailwind & Supabase",
   "scripts": {
@@ -9,7 +9,7 @@
     "build": "npm run tailwind:build && vite build",
     "check-branch": "current_branch=$(git rev-parse --abbrev-ref HEAD) && if [ $current_branch == 'main' ]; then echo 'On main branch.'; else echo 'Error: create-release command should be run on main branch.'; exit 1; fi",
     "create-release": "npm run tailwind:build && cross-env NODE_ENV_PROD=true vite build && npm run package && git commit -am \"v$(node -e \\\"console.log(require('./package.json').version)\\\")\" && npm run git-tag && git push --follow-tags",
-    "dev:old": "npm run tailwind:dev | vite",
+    "dev": "npm run tailwind:dev | vite --mode development",
     "test": "jest",
     "version:patch": "npm version patch --no-git-tag-version",
     "version:minor": "npm version minor --no-git-tag-version",
