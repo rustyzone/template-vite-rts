@@ -6,7 +6,7 @@ plugin
 ## Commands
 
 ~~`yarn dev:old` run local development with reloader and listen for changes to
-tailwind & extension files.~~ - To fixed for vite support issue with tailwind loading, service worker takes a moment to kick in.
+tailwind & extension files.~~ - To fix for vite support issue with tailwind loading, service worker takes a moment to kick in.
 
 `yarn build` make a dev build build
 
