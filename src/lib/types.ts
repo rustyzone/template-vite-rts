@@ -4,6 +4,6 @@ export enum MessageType {
   AppAuth = "app-auth",
   CheckAuth = "check-auth",
   AuthUpdated = "auth-updated",
-  LoginSuccess = "LoginSuccess",
-  LoginFailure = "LoginFailure"
+  LoginSuccess = "login-success",
+  LoginFailure = "login-failure"
 }
