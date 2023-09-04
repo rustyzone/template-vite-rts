@@ -1,13 +1,13 @@
 import React from "react";
 // @ts-ignore - ignore the error for now
-import styles from './css/styling.css'
+import styles from './css/styling.css?inline'
 
 const App = (): JSX.Element => {
   return (
     <>
      <style type="text/css">{styles.toString()}</style>
      <div 
-    className="absolute right-2 top-[100px] flex z-10">
+    className="absolute right-2 top-[100px] flex z-10 pointer-events-auto">
 
     <div 
     onClick={() => {

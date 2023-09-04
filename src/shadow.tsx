@@ -14,6 +14,7 @@ rootElem.style.cssText = `
   position: fixed;
   inset: 0;
   z-index: 2147483647;
+  pointer-events: none;
 `;
 
 // Create the shadow root
