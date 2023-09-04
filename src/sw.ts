@@ -1,108 +1,17 @@
-import { createClient } from "@supabase/supabase-js";
-import localforage from "localforage";
+import supabase from "./lib/initSupabase"
+import User from "./lib/User";
+import clog from "./lib/clog";
+import { MessageType } from "./lib/types";
+import Browser from "webextension-polyfill";
 
-// only emit console.log if in dev mode
-const dev = process.env.NODE_ENV === "development";
-console.log('mode', {node_env:process.env.NODE_ENV, dev})
-const clog = (...args: any[]) => {
-  // Only log in development mode
-  if (dev) {
-    console.debug(
-      `%c${args[0]}`,
-      "color: blue; font-weight: bold;",
-     { message: args[1]}
-    );
-  }
-};
 
 try {
-  const supapaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-
-  const supabase = createClient(supapaseUrl, supabaseKey, {
-    global: { fetch: fetch.bind(globalThis) },
-    auth: {
-      // @ts-ignore
-      storage: localforage,
-      persistSession: true,
-    },
-  });
-
-  localforage.config({
-    name: "supabase",
-    storeName: "auth",
-  });
-
-  // singleton to check if user is logged in
-  class User {
-    private static instance: User;
-    private _isLoggedIn: boolean = false;
-    private _user: any = null;
-
-    private constructor() {
-      clog("user constructor");
-      this.checkLogin();
-    }
-
-    static getInstance() {
-      if (!User.instance) {
-        User.instance = new User();
-      }
-      return User.instance;
-    }
-
-    // check if user is logged in supabase
-    async checkLogin() {
-      const { data: authListener } = await supabase.auth.onAuthStateChange(
-        async (event, session) => {
-          clog("event", event, session);
-          if (event === "SIGNED_IN") {
-            this._isLoggedIn = true;
-            this._user = session?.user;
-          } else {
-            this._isLoggedIn = false;
-            this._user = null;
-          }
-        }
-      );
-      clog("auth listener", authListener);
-    }
-
-    get isLoggedIn() {
-      return this._isLoggedIn;
-    }
-
-    get user() {
-      return this._user;
-    }
-
-    async login(a: string, r: string) {
-      if (this._isLoggedIn) {
-        clog("already logged in");
-        return;
-      }
-      clog("attempt -login", a, r);
-      const { error, data } = await supabase.auth.setSession({
-        refresh_token: r,
-        access_token: a,
-      });
-
-      clog("user", data, error);
-    }
-
-    async logout() {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        clog("error", error);
-      }
-
-      this._isLoggedIn = false;
-      this._user = null;
-    }
-  }
 
   const user = User.getInstance();
   clog("user", user);
+
+  // log supabase instance
+  clog("supabase", supabase);
 
 
   // Open onboarding tab on install
@@ -126,20 +35,57 @@ try {
     _sender: chrome.runtime.MessageSender,
     sendResponse: (response?: any) => void
   ): Promise<any> => {
-    // switch case
+ 
     switch (message.type) {
-      //TODO - log in user from onboarding page or popup - also have a new tab page with login template
-      case "app-auth":
+
+      case MessageType.CheckAuth:
+        // check if user is logged in
+        clog("SW check auth", message);
+        sendResponse({ isLoggedIn: user.isLoggedIn, user:user.user });
+        break;
+
+      
+      case MessageType.Login:
+        // 
+        clog("login user", message);
+        // pass username and password to supabase
+        const email = message.payload.email;
+        const password = message.payload.password;
+         const resp = await User.getInstance().login(email, password);
+
+          clog("SW login resp", resp);
+          clog("SW debug user", {user: User.getInstance().user, isLoggedIn: User.getInstance().isLoggedIn});
+
+          // Message active tab with login status
+          const tabs = await Browser.tabs.query({ active: true, currentWindow: true });
+          if(!tabs[0]) return;
+          const tabId = tabs[0].id;
+          if(!tabId) return;
+          
+          // send message to content script
+          Browser.tabs.sendMessage(tabId, {
+            type: MessageType.LoginSuccess,
+            payload: {
+              isLoggedIn: User.getInstance().isLoggedIn,
+              user: User.getInstance().user
+            }
+          });
+
+        break;
+        
+      case MessageType.AppAuth:
         // send message to background
         clog("app auth", message);
 
         // Useful for passing auth from web app to extension
-        User.getInstance().login(message?.payload?.a, message?.payload?.r);
+        User.getInstance().loginWithToken(message?.payload?.a, message?.payload?.r);
         break;
     }
     return true;
   };
 
+
+  // Add listener for messages from content script
   if (!chrome.runtime.onMessage.hasListeners()) {
     const messageCallback = (
       message: any,
