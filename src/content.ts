@@ -9,9 +9,11 @@ clog("content script");
 window.addEventListener("message", async (event) => {
     // We only accept messages from ourselves
     if (event.source != window) return;
+
+    clog("Content script received message: ", event.data);
     
     if (event.data.type && (event.data.type == MessageType.AppAuth)) {
-        clog("Content script received message: ", event.data);
+        clog("Content script - AppAuth: ", event.data);
         // send message to background
         chrome.runtime.sendMessage({
             type: MessageType.AppAuth,
