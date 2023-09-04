@@ -45,7 +45,7 @@ try {
         break;
 
       
-      case MessageType.Login:
+      case MessageType.Login: {
         // 
         clog("login user", message);
         // pass username and password to supabase
@@ -72,14 +72,30 @@ try {
           });
 
         break;
-        
-      case MessageType.AppAuth:
+      } 
+      case MessageType.AppAuth: {
         // send message to background
         clog("app auth", message);
 
         // Useful for passing auth from web app to extension
-        User.getInstance().loginWithToken(message?.payload?.a, message?.payload?.r);
+        await User.getInstance().loginWithToken(message?.payload?.a, message?.payload?.r);
+
+          // Message active tab with login status
+          const tabs = await Browser.tabs.query({ active: true, currentWindow: true });
+          if(!tabs[0]) return;
+          const tabId = tabs[0].id;
+          if(!tabId) return;
+          
+          // send message to content script
+          Browser.tabs.sendMessage(tabId, {
+            type: MessageType.LoginSuccess,
+            payload: {
+              isLoggedIn: User.getInstance().isLoggedIn,
+              user: User.getInstance().user
+            }
+          });
         break;
+      }
     }
     return true;
   };

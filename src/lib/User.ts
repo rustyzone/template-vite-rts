@@ -51,7 +51,7 @@ import supabase from "../lib/initSupabase";
         clog("already logged in");
         return;
       }
-      clog("attempt login", a, r);
+      clog("attempt login with token", a, r);
       const { error, data } = await supabase.auth.setSession({
         refresh_token: r,
         access_token: a,
