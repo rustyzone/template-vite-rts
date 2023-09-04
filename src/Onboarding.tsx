@@ -24,7 +24,8 @@ const App = (): JSX.Element => {
       switch (msg.type) {
         case MessageType.LoginSuccess:
           // redirect to web app
-          setLoggedIn(true);
+          const { user, isLoggedIn } = msg.payload;
+          setLoggedIn(isLoggedIn && user);
           break;
         case MessageType.LoginFailure:
           // show error message
@@ -38,8 +39,7 @@ const App = (): JSX.Element => {
     // check if user is logged in
     (async () => {
       const resp = await Browser.runtime.sendMessage({ type: MessageType.CheckAuth });
-     
-      if (resp?.isLoggedIn) {
+      if (resp?.isLoggedIn && resp?.user) {
         setLoggedIn(true);
       }
     })();
